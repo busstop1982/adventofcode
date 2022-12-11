@@ -1,14 +1,20 @@
 class hand:
     def __init__(self, name):
-        if name == 'A' or name == 'X':
+        if name == 'A' or name == 'rock':
             self.name = 'rock'
             self.value = 1
-        if name == 'B' or name == 'Y':
+            self.loose = 'paper'
+            self.win = 'scissor'
+        if name == 'B' or name == 'paper':
             self.name = 'paper'
             self.value = 2
-        if name == 'C' or name == 'Z':
+            self.loose = 'scissor'
+            self.win = 'rock'
+        if name == 'C' or name == 'scissor':
             self.name = 'scissor'
             self.value = 3
+            self.loose = 'rock'
+            self.win = 'paper'
 
     def __gt__(self, other):
         if self.name == 'rock':
@@ -45,7 +51,15 @@ with open("rps",'r') as file:
     for line in file:
         adv = line.split()
         enemy = hand(adv[0])
-        me = hand(adv[1])
-        myscore += score(enemy,me)
+        #i gotta loose
+        if adv[1] == 'X':
+            myhand = hand(enemy.win)
+        #i gotta tie
+        if adv[1] == 'Y':
+            myhand = hand(enemy.name)
+        #i gotta win
+        if adv[1] == 'Z':
+            myhand = hand(enemy.loose)
+        myscore += score(enemy,myhand)
 
 print(myscore)
