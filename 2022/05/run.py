@@ -27,11 +27,14 @@ with open("input",'r') as file:
     for stack in stacks:
         print(stack)
 
+    temp = []
     for line in file:
         if "move" in line:
             a,b,c = parse(line)
             for i in range(0,a):
-                stacks[c].append(stacks[b].pop())
+                temp.append(stacks[b].pop())
+            for i in range(0,a):
+                stacks[c].append(temp.pop())
             #print(f"moved {a} thingies from {b} to {c}")
     print('done moving things:')
     for stack in stacks:
