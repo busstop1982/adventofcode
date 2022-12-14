@@ -84,13 +84,13 @@ class navigator:
             if line_input == "cd ..":
                 self.current_folder = self.current_folder.go_up()
             elif "cd" in line_input:
-                goto = line_input.strip('cd ')
+                goto = line_input[3:].replace('\n','')
                 self.current_folder = self.current_folder.go_down(goto)
             #elif "ls" in line_input:
              ##   continue
         else:
             if "dir" in line_input:
-                self.current_folder.make_subfolder(line_input.strip('dir ').replace('\n',''))
+                self.current_folder.make_subfolder(line_input[4:].replace('\n',''))
             else:
                 file_infos = line_input.split()
                 new_one = datei(file_infos[1].replace('\n',''), int(file_infos[0]))
