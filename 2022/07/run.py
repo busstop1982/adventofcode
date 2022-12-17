@@ -94,8 +94,6 @@ class navigator:
             elif "cd" in line_input:
                 goto = line_input[3:]
                 self.current_folder = self.current_folder.go_down(goto)
-            #elif "ls" in line_input:
-             ##   continue
         else:
             if "dir" in line_input:
                 self.current_folder.make_subfolder(line_input[4:])
@@ -111,14 +109,21 @@ class navigator:
                 all_folders.extend(self.get_folders(fold))
         return all_folders
 
-    def get_folders_by_size(self, foldernow, max_size):
+    def get_folders_by_size(self, foldernow):
         all_folders = self.get_folders(foldernow)
-        return [fold.get_size() for fold in all_folders if fold.get_size()<=max_size]
+        return {fold.get_name(): fold.get_size() for fold in all_folders}
 
 navi = navigator()
-print(navi.get_current_folder().get_name())
 with open("input","r") as file:
     for line in file:
         if not "/" in line:
             navi.run_line(line)
-print(sum(navi.get_folders_by_size(navi.get_tld(),100000)))
+foo = navi.get_folders_by_size(navi.get_tld())
+unused_space = 70000000 - foo[navi.get_tld().get_name()]
+print(f"unused space: {unused_space}")
+print(f"needed space: {30000000 - unused_space}")
+options = []
+for name, space in foo.items():
+    if space >= 30000000 - unused_space:
+        options.append(space)
+print(f"size of smallest folder to delete: {min(options)}")
