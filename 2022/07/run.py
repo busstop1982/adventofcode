@@ -1,3 +1,5 @@
+import itertools
+
 class datei:
     def __init__(self, name, size):
         self.name = name
@@ -24,8 +26,13 @@ class folder:
         return f"{self.name}"
 
     def make_subfolder(self, name):
-        new_folder = folder(self, name)
-        self.subfolder.append(new_folder)
+        duplicate = False
+        for fold in self.subfolder:
+            if fold.get_name() == name:
+                duplicate = True
+        if not duplicate:
+            new_folder = folder(self, name)
+            self.subfolder.append(new_folder)
 
     def add_content(self, datei_neu: datei):
         duplicate = False
@@ -79,36 +86,39 @@ class navigator:
         return self.tld
 
     def run_line(self,line_input):
-        if line_input[0] == "$":
+        line_input = line_input.replace('\n','')
+        if "$" in line_input:
             line_input = line_input.strip('$ ')
             if line_input == "cd ..":
                 self.current_folder = self.current_folder.go_up()
             elif "cd" in line_input:
-                goto = line_input[3:].replace('\n','')
+                goto = line_input[3:]
                 self.current_folder = self.current_folder.go_down(goto)
             #elif "ls" in line_input:
              ##   continue
         else:
             if "dir" in line_input:
-                self.current_folder.make_subfolder(line_input[4:].replace('\n',''))
+                self.current_folder.make_subfolder(line_input[4:])
             else:
                 file_infos = line_input.split()
-                new_one = datei(file_infos[1].replace('\n',''), int(file_infos[0]))
+                new_one = datei(file_infos[1], int(file_infos[0]))
                 self.current_folder.add_content(new_one)
 
     def get_folders(self, foldernow):
         all_folders = [foldernow]
         if foldernow.has_subfolders():
             for fold in foldernow.get_subfolders():
-                all_folders.append(fold)
+                all_folders.extend(self.get_folders(fold))
         return all_folders
+
+    def get_folders_by_size(self, foldernow, max_size):
+        all_folders = self.get_folders(foldernow)
+        return [fold.get_size() for fold in all_folders if fold.get_size()<=max_size]
 
 navi = navigator()
 print(navi.get_current_folder().get_name())
 with open("input","r") as file:
     for line in file:
         if not "/" in line:
-            print(line)
             navi.run_line(line)
-            print(navi.get_current_folder())
-print(navi.get_folders())
+print(sum(navi.get_folders_by_size(navi.get_tld(),100000)))
